@@ -5,18 +5,26 @@ using UnityEngine;
 [RequireComponent(typeof(MeshFilter))]
 public class RayTracingObject : MonoBehaviour
 {
-    public Color32 albedo;
-    public Color32 specular;
-    public Color32 emission;
-    public float smoothness;
+    public Color color = Color.white;
+    [Range(0,1)]
+    public float specular = 0;
+    [Range(0,1)]
+    public float emission = 0;
+    [Range(0,1)]
+    public float smoothness = 0;
     public bool RandomMaterial = true;
+
+    public float albedo { 
+        get {return (1.0f - specular);} 
+        set {specular = (1.0f-value);}
+    }
 
     public RayTracer.Material material {
         get {
             return new RayTracer.Material() {
-                albedo = ToVector3(albedo),
-                specular = ToVector3(specular),
-                emission = ToVector3(emission),
+                albedo = ToVector3(color)*albedo,
+                specular = ToVector3(color)*specular,
+                emission = ToVector3(color)*emission,
                 smoothness = smoothness
             };
         }
@@ -32,30 +40,27 @@ public class RayTracingObject : MonoBehaviour
 
     private void SetRandom() {
         // Albedo and specular color
-        Color color = Random.ColorHSV(0f, 1f, 0.8f, 1f, 0.5f, 0.8f);
-        bool metal = Random.value < 0.5f;
-        albedo = ToColor32(metal ? Vector3.zero : new Vector3(color.r, color.g, color.b));
-        specular = ToColor32(metal ? new Vector3(color.r, color.g, color.b) : Vector3.one * 0.04f);
+        color = Random.ColorHSV(0f, 1f, 0.8f, 1f, 0.5f, 0.8f);
+        specular = Random.value;
         smoothness = Random.value;
 
-        bool isEmitting = Random.value < 0.2;
+        bool isEmitting = Random.value < 0.2f;
         if (isEmitting) {
-            Color emission = Random.ColorHSV(0, 1, 0, 1, 3.0f, 8.0f);
-            emission = ToColor32(new Vector3(emission.r, emission.g, emission.b));
+            emission = Random.Range(0.3f, 0.8f);
         } else {
-            emission = ToColor32(new Vector3(0.0f, 0.0f, 0.0f));
+            emission = 0;
         }
     }
 
 
 
 
-    public static Vector3 ToVector3(Color32 c) {
-        return new Vector3(c.r / 255.0f, c.g / 255.0f, c.b / 255.0f);
+    public static Vector3 ToVector3(Color c) {
+        return new Vector3(c.r, c.g, c.b);
     }
 
-    public static Color32 ToColor32(Vector3 v) {
-        return new Color32((byte)(v.x * 255.0f), (byte)(v.y * 255.0f), (byte)(v.z * 255.0f), 255);
+    public static Color ToColor(Vector3 v) {
+        return new Color(v.x, v.y, v.z);
     }
 
 }
