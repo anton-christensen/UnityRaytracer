@@ -107,7 +107,7 @@ float SmoothnessToPhongAlpha(float s) {
     return pow(1000.0f, s * s);
 }
 
-bool IntersectTriangle_MT97(Ray ray, float3 vert0, float3 vert1, float3 vert2, inout float t, inout float u, inout float v) {
+bool IntersectTriangle(Ray ray, float3 vert0, float3 vert1, float3 vert2, inout float t, inout float u, inout float v) {
     // find vectors for two edges sharing vert0
     float3 edge1 = vert1 - vert0;
     float3 edge2 = vert2 - vert0;
@@ -174,9 +174,9 @@ void IntersectMeshObject(Ray ray, inout RayHit bestHit, int meshIndex) {
         float3 v0 = (mul(meshObject.localToWorldMatrix, float4(_Vertices[_Indices[i]], 1))).xyz;
         float3 v1 = (mul(meshObject.localToWorldMatrix, float4(_Vertices[_Indices[i + 1]], 1))).xyz;
         float3 v2 = (mul(meshObject.localToWorldMatrix, float4(_Vertices[_Indices[i + 2]], 1))).xyz;
-        float t, u, v;
+        float t = 0.0f, u, v;
 
-        if (IntersectTriangle_MT97(ray, v0, v1, v2, t, u, v)) {
+        if (IntersectTriangle(ray, v0, v1, v2, t, u, v)) {
             if (t > 0 && t < bestHit.distance) {
                 bestHit.distance = t;
                 bestHit.position = ray.origin + t * ray.direction;
@@ -243,7 +243,7 @@ float3 Shade(inout Ray ray, RayHit hit) {
     }
 }
 
-[numthreads(8,8,1)]
+[numthreads(16,16,1)]
 void CSMain (uint3 id : SV_DispatchThreadID) {
     _Pixel = id.xy;
 

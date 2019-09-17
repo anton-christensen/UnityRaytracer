@@ -12,7 +12,7 @@ public class RayTracingObject : MonoBehaviour
     public bool RandomMaterial = true;
 
     public RayTracer.Material material {
-        get {
+        get { 
             return new RayTracer.Material() {
                 albedo = ToVector3(albedo),
                 specular = ToVector3(specular),
@@ -46,10 +46,6 @@ public class RayTracingObject : MonoBehaviour
             emission = ToColor32(new Vector3(0.0f, 0.0f, 0.0f));
         }
     }
-
-
-
-
     public static Vector3 ToVector3(Color32 c) {
         return new Vector3(c.r / 255.0f, c.g / 255.0f, c.b / 255.0f);
     }
