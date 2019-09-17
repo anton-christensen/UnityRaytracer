@@ -182,8 +182,8 @@ public class RayTracingMaster : MonoBehaviour {
 
         // Set the target and dispatch the compute shader
         rayTracingShader.SetTexture(0, "Result", _target);
-        int threadGroupsX = Mathf.CeilToInt(Screen.width / 16.0f);
-        int threadGroupsY = Mathf.CeilToInt(Screen.height / 16.0f);
+        int threadGroupsX = Mathf.CeilToInt(Screen.width / 32.0f);
+        int threadGroupsY = Mathf.CeilToInt(Screen.height / 32.0f);
         rayTracingShader.Dispatch(0, threadGroupsX, threadGroupsY, 1);
 
         // Blit the result texture to the screen
